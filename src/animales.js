@@ -1,14 +1,7 @@
-function log(...args) {
-    console.log(...args);
-}
+import { Carne, Sangre } from "./comidas.js";
+import { log, getRandomInt } from "./helpers/functions.js";
 
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-}
-
-class Animal {
+export class Animal {
 
     #diaD;
     constructor(nombre, edad, expectativaDeVida, vertebrado = true, duracionDeComida = 4000, duracionEstadoAlimentado = 10000) {
@@ -25,9 +18,11 @@ class Animal {
     }
     
     hambre = true;
-    hambreTimeout = null
-    comiendoTimeout = null
+    hambreTimeout = null;
+    comiendoTimeout = null;
+    movimientoTimeout = null;
     estaComiendo = null;
+    estaMoviendo = null;
 
     generarDiaD() {
         setTimeout(() => {
@@ -101,103 +96,17 @@ class Animal {
 
     #setDiaD(){
         this.#diaD = Math.abs((this._expectativaDeVida - this._edad) + getRandomInt(-30,30) * 1000);
-        log(this.#diaD)
     }
 
     #clearAllTimers() {
-        [this.hambreTimeout, this.comiendoTimeout, this.terminoComerTimeout].forEach(e => clearTimeout(e));
-        [this.estaComiendo].forEach(e => clearInterval(e));
-    }
-}
-
-
-class Comida {
-    constructor(nombre, tipo, duracion, intervalo) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.duracion = duracion;
-        this.intervalo = intervalo;
-    };
-
-}
-
-class Carne extends Comida {
-    constructor(nombre, duracion = 300) {
-        super(nombre, "carne", duracion)
-    }
-
-    esMismaCarne(carne) {
-        return carne.tipo === this.tipo && carne.nombre === this.nombre;
-    }
-}
-
-
-class Sangre extends Comida {
-    constructor(nombre, duracion = 100) {
-        super(nombre, "sangre", duracion)
-    }
-
-}
-
-
-class Movimiento {
-    #tipos = ["terrestre", "aereo", "acuático"]
-    constructor(tipo, duracion, intervalo = 500) {
-        if (!this.#tipos.includes(tipo)) throw new Error("tipo incorrecto")
-        this.tipo = tipo;
-        this.duracion = duracion;
-        this.intervalo = intervalo;
-    }
-}
-
-class Correr extends Movimiento {
-    constructor(duracion) {
-        super("terrestre", duracion);
-        this.nombre = "correr";
-    }
-
-    ejecutar(animal) {
-        console.log(`${animal.nombre} está corriendo`);
-    }
-
-    get movimiento () {
-        return `corriendo`
-    }
-}
-
-class Caminar extends Movimiento {
-    constructor(duracion) {
-        super("terrestre", duracion);
-        this.nombre = "caminar";
-    }
-
-    ejecutar(animal) {
-        console.log(`${animal.nombre} está caminando`);
-    }
-
-    get movimiento () {
-        return `caminando`
-    }
-}
-
-class Volar extends Movimiento {
-    constructor(duracion) {
-        super("terrestre", duracion);
-        this.nombre = "volar";
-    }
-
-    ejecutar(animal) {
-        console.log(`${animal.nombre} está volando`);
-    }
-
-    get movimiento () {
-        return `volando`
+        [this.hambreTimeout, this.comiendoTimeout, this.terminoComerTimeout, this.movimientoTimeout].forEach(e => clearTimeout(e));
+        [this.estaComiendo, this.estaMoviendo].forEach(e => clearInterval(e));
     }
 }
 
 
 
-class Leon extends Animal {
+export class Leon extends Animal {
     constructor(nombre, edad) {
         super(nombre, edad, 50, true, 10000, 25000);
         this.comidas = [new Carne("venado", 500), new Carne("vaca", 300)];
@@ -229,7 +138,7 @@ class Leon extends Animal {
     }
 }
 
-class Mosquito extends Animal {
+export class Mosquito extends Animal {
     constructor(nombre, edad) {
         super(nombre, edad, 10, false, 2000, 5000);
         this.comidas = [new Sangre("sangre humana", 100)];
@@ -250,10 +159,3 @@ class Mosquito extends Animal {
         return `El mosquito ${this._nombre}`
     }
 }
-
-
-const leon = new Leon("leoncito", 1);
-log(leon.mover(new Correr(5000)))
-
-const mosquito = new Mosquito("Aedes", 1);
-log(mosquito.mover(new Volar(1000)))
