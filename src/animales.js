@@ -1,4 +1,4 @@
-import { Carne, Sangre } from "./comidas.js";
+import { Carne, Sangre, Comida } from "./comidas.js";
 import { log, getRandomInt } from "./helpers/functions.js";
 
 export class Animal {
